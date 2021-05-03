@@ -19,6 +19,9 @@ fly(){
     Matter.Body.applyForce(this.sling.bodyA,this.sling.bodyA.position,{x:this.pointB.x,y:this.pointB.y})
     this.sling.bodyA = null;
 }
+attach(body){
+    this.sling.bodyA = body;
+}
 
     display(){
         image (this.sling1,200,20)
