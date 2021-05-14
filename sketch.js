@@ -9,10 +9,14 @@ var backgroundImg,platform;
 var score =0;
 var bird, slingShot;
 var gameState = "onSling"
+var birds = []
 
 function preload() {
    
     getTime();
+    bg = loadImage("sprites/bg.png")
+    birdSelectSound = loadSound("sprites/bird_select.mp3");
+    birdFlySound = loadSound ("sprites/bird_flying.mp3");
 }
 
 function setup(){
@@ -40,6 +44,11 @@ function setup(){
     log5 = new Log(870,120,150, -PI/7);
 
     bird = new Bird(200,50);
+    bird2 = new Bird (150,170);
+    bird3 = new Bird (100,170);
+    birds.push(bird3)
+    birds.push(bird2)
+    birds.push(bird)
 
     log6 = new Log(230,180,80, PI/2);
     sling = new Slingshot(bird.body,{x:200,y:50});
@@ -48,12 +57,22 @@ function setup(){
 function draw(){
 
 
-   if(backgroundImg)
+   if(backgroundImg) {
     background(backgroundImg);
+   }
+   else{
+       background(bg)
+   }
  
     textSize (35)
     fill ("white")
     text ("Score: " + score ,width -300, 50)
+    if(gameState==="launched"){
+    if(birds.length>0){
+        fill("yellow")
+        text("Press space for next bird",480,50)
+    }
+    }
 
     Engine.update(engine);
     strokeWeight(4);
@@ -74,26 +93,35 @@ function draw(){
     log4.display();
     log5.display();
 
-    bird.display();
+    bird.displayRed();
+    bird2.displayBlue();
+    bird3.displayYellow();
+
+    bird.displayTrajectory();
+    bird2.displayTrajectory();
+    bird3.displayTrajectory();
     platform.display();
     //log6.display();
     sling.display();    
 }
 function mouseDragged(){
     if(mouseX >=0 && mouseX<200 &&  gameState!== "launched" )
- Matter.Body.setPosition(bird.body,{x:mouseX,y:mouseY});
+ Matter.Body.setPosition(birds[bird.length-1].body,{x:mouseX,y:mouseY});
+ birdFlySound.play();
 }
 
 function mouseReleased(){
     sling.fly();
+    birds.pop()
     gameState = "launched";
 }
 function keyPressed(){
     if(keyCode===32){
-        sling.attach(bird.body);
-        Matter.Body.setPosition(bird.body,{x:200,y:50});
+        sling.attach(birds[birds.length-1].body);
+        Matter.Body.setPosition(birds[birds.length-1].body,{x:200,y:50});
         Matter.Body.setAngle(bird.body,0)
         gameState = "onSling"
+        birdSelectSound.play();
     }
 }
 
